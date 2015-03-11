@@ -1,10 +1,17 @@
 #Cotizador
 import csv, re
 import urllib
+import datetime
 from amazon.api import AmazonAPI
-from bottle import route, run, template, static_file, request
+from bottle import route, run, template, static_file, request, auth_basic, response
 from bs4 import BeautifulSoup as BS
 from fake_useragent import UserAgent
+
+def check(user, pw):
+    if user=='impor' and pw == 'tunas':
+        response.set_cookie("visited", "yes")
+        return True
+    return False
 
 def get_csv(csv_file='rootkey.csv'):
     dic = {}
@@ -16,7 +23,8 @@ def get_csv(csv_file='rootkey.csv'):
     return dic
 
 class MyOpener(urllib.FancyURLopener):
-	version = UserAgent().random
+    pass
+
 
 def get_dollar():
     ban_url = "http://www.dolar.mx/precio-del-dolar-hoy/"
@@ -43,16 +51,16 @@ def get_price(url, store='Amazon'):
         price = float(price.translate(None, '$'))
         return price
 
-
 @route('/', method='GET')
-def home():
-	if request.GET.get('link', ''):
-		url = request.GET.get('link', '').strip()
-                print url
-                print "\n\n\n\n\n"
-                return template('cotizador.tpl', usd_price=get_price(url),
+@auth_basic(check)
+def cot():
+    #if not request.get_cookie("visited"):
+    #    return 'Por favor, logueate antes de entrar.'
+    if request.GET.get('link', ''):
+        url = request.GET.get('link', '').strip()
+        return template('cotizador.tpl', usd_price=get_price(url),
                         usd_mxn=get_dollar())
-	else:
-		return static_file('cock.html', root=".")
+    else:
+        return static_file('cock.html', root=".")
 
 run(host='0.0.0.0', port=8080, autoreload=True)

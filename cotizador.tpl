@@ -7,7 +7,7 @@
   <title>Cotizador</title>
 </head>
 <body>
-        <h1><img src="https://cock.li/cock.png" alt="cock" />Cotizador de Amazon y otras paginas</h2>
+        <h1><img src="https://cock.li/cock.png" alt="cock" />Cocktizador</h2>
         <p>Minimalista because fuck you</p>
         <a href="/">home</a> |
         <a href="#">Productos</a> |

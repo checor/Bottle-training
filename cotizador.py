@@ -33,7 +33,7 @@ def get_dollar():
     precios = page.findAll("h2")
     #Esto puede ser altamente variable, no confiable
     valores = str(precios[3])
-    precio = valores[41:47]
+    precio = valores[42:47]
     return float(precio)
 
 def get_price(url, store='Amazon'):

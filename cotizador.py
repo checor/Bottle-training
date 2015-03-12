@@ -25,15 +25,13 @@ def get_csv(csv_file='rootkey.csv'):
 class MyOpener(urllib.FancyURLopener):
     pass
 
-
 def get_dollar():
     ban_url = "http://www.dolar.mx/precio-del-dolar-hoy/"
     opener = MyOpener()
     page = BS(opener.open(ban_url).read())
     precios = page.findAll("h2")
-    #Esto puede ser altamente variable, no confiable
     valores = str(precios[3])
-    precio = valores[42:47]
+    precio = re.findall("- \$(.*?) <br/>", valores)[1]
     return float(precio)
 
 def get_price(url, store='Amazon'):

@@ -2,10 +2,16 @@
 import csv, re
 import urllib
 import datetime
+import sqlite3
 from amazon.api import AmazonAPI
 from bottle import route, run, template, static_file, request, auth_basic, response
 from bs4 import BeautifulSoup as BS
 from fake_useragent import UserAgent
+
+
+##
+##  Cotizador
+##
 
 def check(user, pw):
     if user=='impor' and pw == 'tunas':
@@ -60,5 +66,27 @@ def cot():
                         usd_mxn=get_dollar())
     else:
         return static_file('cock.html', root=".")
+
+##
+##  Productos
+##
+
+
+@route('/productos', method='GET')
+@auth_basic(check)
+def prod():
+    if not request.get_cookie("visited"):
+        return 'Por favor, logueate antes de entrar.'
+    elif request.GET.get('SKU',''):
+        return "Esto fue lo que me mandaron putos: %s" % request.query.decode()
+    else:
+        conn = sqlite3.connect('tunas.db')
+        c = conn.cursor()
+        c.execute("SELECT * FROM productos")
+        result = c.fetchall()
+        c.close()
+
+        return template('productos.tpl', rows=result)
+
 
 run(host='0.0.0.0', port=8080, autoreload=True)

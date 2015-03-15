@@ -1,5 +1,5 @@
 #Cotizador
-import csv, re
+import re
 import urllib
 import datetime
 import sqlite3
@@ -40,8 +40,8 @@ def get_dollar():
     precio = re.findall("- \$(.*?) <br/>", valores)[1]
     return float(precio)
 
-def get_price(url, store='Amazon'):
-    if store == 'Amazon':
+def get_price(url):
+    if 'amazon' in url:
         dic = get_csv()
         api = AmazonAPI(dic['AWSAccessKeyId'], dic['AWSSecretKey'], dic['asoc'])
         if '/dp/' in url:
@@ -53,7 +53,39 @@ def get_price(url, store='Amazon'):
         product = api.lookup(ItemId=id_)
         price = str(product.price_and_currency[0])
         price = float(price.translate(None, '$'))
-        return price
+    else:
+        opener = MyOpener()
+        if 'hottopic' in url:
+            page = opener.open(url).read()
+            soup = BS(page)
+            try:
+                price = str(soup.find(class_ = "Now").text)
+                price = float(price.translate(None, '$'))
+            except:
+                print "Articulo no encontrado"
+                price = 0
+        elif 'toywiz' in url:
+            page = opener.open(url).read()
+            soup = BS(page)
+            try:
+                price = str(soup.find(class_ = "itemPriceBlock").text)
+                price = float(price.translate(None, '$'))
+            except:
+                print "Error al querer obtener precio de ToyWiz"
+                price = 0
+            return price
+        elif 'barnes' in url:
+            opener = MyOpener()
+            page = opener.open(url)
+            soup = BS(page)
+            try:
+                price = str(soup.find(class_ = 'price hilight').text)
+                price = float(price.translate(None, '$'))
+            except:
+                price = 0
+        else:
+            print "Tienda no implmentada"
+    return price
 
 @route('/', method='GET')
 @auth_basic(check)
@@ -76,9 +108,9 @@ def cot():
 @auth_basic(check)
 def prod():
     if not request.get_cookie("visited"):
-        return 'Por favor, logueate antes de entrar.'
+        return 'Por favor, logueate antes de entrar. Presiona F5 si ya lo hiciste'
     elif request.GET.get('SKU',''):
-        return "Esto fue lo que me mandaron putos: %s" % request.query.decode()
+        return "Esto fue lo que me mandaron putos: %s" % request.GET.decode()
     else:
         conn = sqlite3.connect('tunas.db')
         c = conn.cursor()

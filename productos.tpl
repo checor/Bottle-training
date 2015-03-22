@@ -17,7 +17,7 @@ table, th, td {
 	<h1><img src="https://cock.li/cock.png" alt="cock" />Cocktizador</h2>
 	<p>Minimalista because fuck you</p>
 	<a href="/">home</a> |
-	<a href="#">Productos</a> |
+	<a href="./productos">Productos</a> |
 	<a href="#">Clientes</a> |
 	<a href="#">Ventas</a> | 
 	<a href="#">Compras</a> |

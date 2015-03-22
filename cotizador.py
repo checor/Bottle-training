@@ -6,7 +6,7 @@ import sqlite3
 from amazon.api import AmazonAPI
 from bottle import route, run, template, static_file, request, auth_basic, response
 from bs4 import BeautifulSoup as BS
-from fake_useragent import UserAgent
+#from fake_useragent import UserAgent
 
 
 ##
@@ -110,7 +110,19 @@ def prod():
     if not request.get_cookie("visited"):
         return 'Por favor, logueate antes de entrar. Presiona F5 si ya lo hiciste'
     elif request.GET.get('SKU',''):
-        return "Esto fue lo que me mandaron putos: %s" % request.GET.decode()
+        data = dict(request.query)
+        conn = sqlite3.connect('tunas.db')
+        c = conn.cursor()
+        if 'nombre' in data:
+            c.execute("INSERT INTO productos ('ID', 'Nombre') values (?,?)", (data['SKU'], data['nombre']))
+            #c.execute("INSERT INTO productos_links (ID, link, tienda) values (?,?,?)",
+            #        (data['SKU'], data['link'], 'amazon'))
+            conn.commit()
+            c.close()
+            return "Producto agregado con exito!"
+        else:
+            return "No implementado :("
+            
     else:
         conn = sqlite3.connect('tunas.db')
         c = conn.cursor()

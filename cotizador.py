@@ -3,6 +3,7 @@ import re
 import urllib
 import datetime
 import sqlite3
+import csv
 from amazon.api import AmazonAPI
 from bottle import route, run, template, static_file, request, auth_basic, response
 from bs4 import BeautifulSoup as BS

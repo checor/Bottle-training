@@ -41,8 +41,9 @@ def get_dollar():
     precio = re.findall("- \$(.*?) <br/>", valores)[1]
     return float(precio)
 
-def get_price(url):
+def get_price(url, return_store=False):
     if 'amazon' in url:
+        store = 'Amazon'
         dic = get_csv()
         api = AmazonAPI(dic['AWSAccessKeyId'], dic['AWSSecretKey'], dic['asoc'])
         if '/dp/' in url:
@@ -50,13 +51,14 @@ def get_price(url):
         elif '/product/' in url:
         	id_ = re.search("/product/(.*?)/", url).group(1)
         else:
-        	return 0
+        	price = 0
         product = api.lookup(ItemId=id_)
         price = str(product.price_and_currency[0])
         price = float(price.translate(None, '$'))
     else:
         opener = MyOpener()
         if 'hottopic' in url:
+            store = 'Hot Topic'
             page = opener.open(url).read()
             soup = BS(page)
             try:
@@ -66,6 +68,7 @@ def get_price(url):
                 print "Articulo no encontrado"
                 price = 0
         elif 'toywiz' in url:
+            store = 'Toy Wiz'
             page = opener.open(url).read()
             soup = BS(page)
             try:
@@ -74,8 +77,8 @@ def get_price(url):
             except:
                 print "Error al querer obtener precio de ToyWiz"
                 price = 0
-            return price
         elif 'barnes' in url:
+            store = 'Barnes And Noble'
             opener = MyOpener()
             page = opener.open(url)
             soup = BS(page)
@@ -86,7 +89,10 @@ def get_price(url):
                 price = 0
         else:
             print "Tienda no implmentada"
-    return price
+    if not return_store:
+        return price
+    else:
+        return price, store
 
 @route('/', method='GET')
 @auth_basic(check)
@@ -112,13 +118,14 @@ def prod():
         return 'Por favor, logueate antes de entrar. Presiona F5 si ya lo hiciste'
     elif request.GET.get('SKU',''):
         data = dict(request.query)
-        print data
         conn = sqlite3.connect('tunas.db')
         c = conn.cursor()
         if 'nombre' in data:
             c.execute("INSERT INTO productos ('ID', 'Nombre') values (?,?)", (data['SKU'], data['nombre']))
-            #c.execute("INSERT INTO productos_links (ID, link, tienda) values (?,?,?)",
-            #        (data['SKU'], data['link'], 'amazon'))
+            fecha = datetime.datetime.now()
+            precio = get_price(data['link'], True) #Regresa la tienda como tupla en segunda posicion
+            c.execute("INSERT INTO productos_links (ID, tienda, link, precio, fecha, existencia) \
+                    values (?,?,?,?,?,?)", (data['SKU'], precio[1], data['link'], precio[0], fecha, 10))
             conn.commit()
             c.close()
             return "Producto agregado con exito!"
@@ -127,6 +134,8 @@ def prod():
             conn.commit()
             c.close()
             return "Borrado D:"
+        elif 'add_link' in data:
+            c.execute
         else:
             return "No implementado :("
             

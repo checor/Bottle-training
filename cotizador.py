@@ -112,6 +112,7 @@ def prod():
         return 'Por favor, logueate antes de entrar. Presiona F5 si ya lo hiciste'
     elif request.GET.get('SKU',''):
         data = dict(request.query)
+        print data
         conn = sqlite3.connect('tunas.db')
         c = conn.cursor()
         if 'nombre' in data:
@@ -121,6 +122,11 @@ def prod():
             conn.commit()
             c.close()
             return "Producto agregado con exito!"
+        elif "del_SKU" in data:
+            c.execute("DELETE FROM productos WHERE ID = (?)", data['SKU'])
+            conn.commit()
+            c.close()
+            return "Borrado D:"
         else:
             return "No implementado :("
             

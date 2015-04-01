@@ -62,8 +62,6 @@ table, th, td {
 	</form>
 
 	<h3>Lista de productos:</h3>
-	<form>
-	</form>
 	 <table style="*">
 	  <tr>
 	    <td><b>ID</b></td>
@@ -76,6 +74,19 @@ table, th, td {
 	    %end
 	  </tr>
 	  %end
-</table> 	
+	</table>
+
+    <h3>Borrar producto:</h3>
+    <form>
+        <table style="*">
+        <tr>
+            <td>SKU:</td>
+            <td><input type="text" name="SKU"></td>
+        </tr>
+        <tr><td><input type="submit" name="del_SKU" value="Borrar"></td></tr>
+        </table>
+    </form>
+
+
 </body>
 </html>

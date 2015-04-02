@@ -120,22 +120,21 @@ def prod():
         data = dict(request.query)
         conn = sqlite3.connect('tunas.db')
         c = conn.cursor()
-        if 'nombre' in data:
-            c.execute("INSERT INTO productos ('ID', 'Nombre') values (?,?)", (data['SKU'], data['nombre']))
+        if 'nombre' in data or 'add_link' in data:
+            if 'nombre' in data:
+                c.execute("INSERT INTO productos ('ID', 'Nombre') values (?,?)", (data['SKU'], data['nombre']))
             fecha = datetime.datetime.now()
             precio = get_price(data['link'], True) #Regresa la tienda como tupla en segunda posicion
             c.execute("INSERT INTO productos_links (ID, tienda, link, precio, fecha, existencia) \
                     values (?,?,?,?,?,?)", (data['SKU'], precio[1], data['link'], precio[0], fecha, 10))
             conn.commit()
             c.close()
-            return "Producto agregado con exito!"
+            return "Producto/link agregado con exito!"
         elif "del_SKU" in data:
             c.execute("DELETE FROM productos WHERE ID = (?)", data['SKU'])
             conn.commit()
             c.close()
-            return "Borrado D:"
-        elif 'add_link' in data:
-            c.execute
+            return "Borrado"
         else:
             return "No implementado :("
             
@@ -148,5 +147,65 @@ def prod():
 
         return template('productos.tpl', rows=result)
 
+##
+## Clientes
+##
+
+@route('/clientes', method='GET')
+@auth_basic(check)
+def clientes():
+    print dict(request.query)
+    data = dict(request.query)
+    conn = sqlite3.connect('tunas.db')
+    c = conn.cursor()
+    if 'add' in data:
+        c.execute("INSERT INTO clientes ('Nombre', 'Direccion', 'Tienda', 'Credito') \
+             values (?,?,?,?)", (data['nombre'], data['direccion'], data['tienda'], data['credito']))
+    elif 'del' in data:
+        c.execute("DELETE FROM clientes WHERE ID = (?)", data['ID'])
+    else:
+        c.execute("SELECT * FROM clientes")
+        result = c.fetchall()
+        c.close()
+        return template('clientes.tpl', rows=result)
+    conn.commit()
+    c.close()
+    return 'Agregado o borrado cliente con exito'
+
+
+##
+## Ventas
+##
+
+@route('/ventas', method='GET')
+@auth_basic(check)
+def ventas():
+    return "No implementado"
+
+##
+## Compras
+##
+
+@route('/compras', method='GET')
+@auth_basic(check)
+def compras():
+    return "No implementado"
+
+##
+## Backorder
+##
+
+@route('/backorder', method='GET')
+@auth_basic(check)
+def backorder():
+    return "No implementado"
+
+##
+## Cuentas
+##
+@route('/cuentas', method='GET')
+@auth_basic(check)
+def cuentas():
+    return "No implementado"
 
 run(host='0.0.0.0', port=8080, autoreload=True)

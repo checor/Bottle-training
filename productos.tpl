@@ -18,7 +18,7 @@ table, th, td {
 	<p>Minimalista because fuck you</p>
 	<a href="/">home</a> |
 	<a href="./productos">Productos</a> |
-	<a href="#">Clientes</a> |
+	<a href="./clientes">Clientes</a> |
 	<a href="#">Ventas</a> | 
 	<a href="#">Compras</a> |
 	<a href="#">Backorder</a> |
@@ -41,7 +41,7 @@ table, th, td {
 			<td><input type="text" name="link"></td>
 		</tr>
 		
-		<tr><td><input type="submit" name="add_prodcut" value="Agregar"></td></tr>
+		<tr><td><input type="submit" name="add" value="Agregar"></td></tr>
 		</table>
 	</form>
 
@@ -83,7 +83,7 @@ table, th, td {
             <td>SKU:</td>
             <td><input type="text" name="SKU"></td>
         </tr>
-        <tr><td><input type="submit" name="del_SKU" value="Borrar"></td></tr>
+        <tr><td><input type="submit" name="del" value="Borrar"></td></tr>
         </table>
     </form>
 

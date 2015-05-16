@@ -87,6 +87,16 @@ def get_price(url, return_store=False):
                 price = float(price.translate(None, '$'))
             except:
                 price = 0
+        elif 'gamestop' in url:
+            store = 'Gamestop'
+            opener = MyOpener()
+            page = opener.open(url)
+            soup = BS(page)
+            try:
+                price = str(soup.find(class_ = 'buy1').text)
+                price = float(price.translate(None, '$'))
+            except:
+                price = 0
         else:
             print "Tienda no implmentada"
     if not return_store:
